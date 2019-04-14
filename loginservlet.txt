@@ -1,0 +1,81 @@
+package test;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+@WebServlet("/loginadmin")
+public class loginservlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public loginservlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.setContentType("text/html");  
+		PrintWriter out = response.getWriter();  
+		String uname=request.getParameter("username");
+		String pname=request.getParameter("pass");
+		int flag=0;
+		try{  
+			
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+
+		Connection con=DriverManager.getConnection(  
+		"jdbc:oracle:thin:@localhost:1521/xe","system","Dolly321%");  
+
+		PreparedStatement ps=con.prepareStatement("select * from  myuser where username=? ");  
+		ps.setString(1,uname);  
+		System.out.println("hello1");
+		ResultSet rs=ps.executeQuery();
+		System.out.println("hello2");
+     
+		 
+		 while(rs.next())
+		 {System.out.println("hello2");
+		 
+		 
+			 if(rs.getString(3).equals(uname) && rs.getString(5).equals(pname))
+			 {;
+				 RequestDispatcher dispatcher = request.getRequestDispatcher("userafterlogin.html");
+				 dispatcher.forward(request, response);
+				 flag=1;
+			 }
+			
+		 }
+		 
+		 if(flag==0)
+		 {
+			 RequestDispatcher dispatcher = request.getRequestDispatcher("loginfailed.html");
+			 dispatcher.forward(request, response);
+		 }
+		
+		
+		
+		
+	}
+
+catch (Exception e2) {e2.printStackTrace();}  
+out.close();
+}
+
+}
+
